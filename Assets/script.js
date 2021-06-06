@@ -8,13 +8,22 @@ var date;
 var workHours = 9;
 
 // Retrieve local data
-var unpackedHourlyContent = JSON.parse(localStorage.getItem("savedHourlyContent"));
+var unpackedHourlyContent = JSON.parse(localStorage.getItem("savedHourlyContent")) || emptyTextBoxes();
 
 // ---------------------------------------------------------------------------------------------------
 // FUNCTIONS
-// Updates the time on the website to current date down to the second
+// First time visiters need an empty array in place of local data
+function emptyTextBoxes() {
+    var emptyArray = [];
+    for ( var i = 0; i < workHours; i++) {
+        emptyArray.push("");
+    }
+    return emptyArray;
+}
+
+// Updates the time on the website to current date down to the second. Refreshes page every hour.
 function currentTime() {
-    date = moment().format("dddd, MMMM Do, YYYY, h:mm:ss a");
+    date = moment().format("dddd, MMMM Do, YYYY, h:mm a");
     todaysDateEl.text(date);
     if(moment().format("mm:ss") === "00:00") location.reload();
 }
@@ -63,7 +72,7 @@ for(var i = 0; i < workHours; i++) {
             <div class="col-1 hour">
                 <p>${moment(i+9,"H").format("h a")}</p>
             </div>
-            <textarea class="col-10 ${hourPasPreFut(i+16)}" id="${i}hourText">${unpackedHourlyContent[i]}</textarea>
+            <textarea class="col-10 ${hourPasPreFut(i+9)}" id="${i}hourText">${unpackedHourlyContent[i]}</textarea>
             <div class="col-1 saveBtn saveID">
                 <i class="fas fa-save fa-2x saveID"></i>
             </div>
