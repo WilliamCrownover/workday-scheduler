@@ -16,6 +16,7 @@ var unpackedHourlyContent = JSON.parse(localStorage.getItem("savedHourlyContent"
 function currentTime() {
     date = moment().format("dddd, MMMM Do, YYYY, h:mm:ss a");
     todaysDateEl.text(date);
+    if(moment().format("mm:ss") === "00:00") location.reload();
 }
 
 // Compare the looping index value to the current hour returning a corresponding class name
@@ -33,9 +34,20 @@ function saveTextboxContent() {
     localStorage.setItem("savedHourlyContent", JSON.stringify(savedHourlyContent));
 }
 
-// Check if the save button was pressed then save if true
+// Save click flashes the background color
+function showClick(target) {
+    target.classList.add("clicked");
+    var clickedDisplay = setTimeout(function() {
+        target.classList.remove("clicked");
+    }, 150);
+}
+
+// Check if the save button was pressed then save if true and show click
 function saveClicked(event) {
-    if($(event.target).hasClass("saveID")) saveTextboxContent();
+    if($(event.target).hasClass("saveID")) {
+        saveTextboxContent();
+        (event.target.nodeName === "DIV" ? showClick(event.target) : showClick(event.target.parentNode));
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------
