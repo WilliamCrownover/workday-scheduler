@@ -3,8 +3,12 @@
 var todaysDateEl = $("#currentDay");
 var hourBlockContainerEl = $("#hourBlockContainer");
 
-// Tracking data
+// Useful data
 var date;
+var workHours = 9;
+
+// Retrieve local data
+var unpackedHourlyContent = JSON.parse(localStorage.getItem("savedHourlyContent"));
 
 // ---------------------------------------------------------------------------------------------------
 // FUNCTIONS
@@ -14,9 +18,24 @@ function currentTime() {
     todaysDateEl.text(date);
 }
 
+// Compare the looping index value to the current hour returning a corresponding class name
 function hourPasPreFut(hourIndex) {
     var currentHour = moment().format("H")
     return (hourIndex < currentHour ? "past" : (hourIndex > currentHour ? "future" : "present"));
+}
+
+// Write the content of the text areas to the local storage
+function saveTextboxContent() {
+    var savedHourlyContent = [];
+    for(var i = 0; i < workHours; i++ ) {
+        savedHourlyContent.push($(`#${i}hourText`).val());
+    }
+    localStorage.setItem("savedHourlyContent", JSON.stringify(savedHourlyContent));
+}
+
+// Check if the save button was pressed then save if true
+function saveClicked(event) {
+    if($(event.target).hasClass("saveID")) saveTextboxContent();
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -25,16 +44,20 @@ function hourPasPreFut(hourIndex) {
 currentTime();
 var updatingTimeInterval = setInterval(currentTime, 1000);
 
-for(var i = 0; i < 9; i++) {
+// Load the hour rows to the page
+for(var i = 0; i < workHours; i++) {
     hourBlockContainerEl.append(`
         <div class="row">
             <div class="col-1 hour">
                 <p>${moment(i+9,"H").format("h a")}</p>
             </div>
-            <textarea class="col-10 ${hourPasPreFut(i+11)}"></textarea>
-            <div class="col-1 saveBtn">
-                <i class="fas fa-save fa-2x"></i>
+            <textarea class="col-10 ${hourPasPreFut(i+16)}" id="${i}hourText">${unpackedHourlyContent[i]}</textarea>
+            <div class="col-1 saveBtn saveID">
+                <i class="fas fa-save fa-2x saveID"></i>
             </div>
         </div>
     `);
 }
+
+// Event listener save button click
+hourBlockContainerEl.on("click", saveClicked);
